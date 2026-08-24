@@ -4,6 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +22,9 @@ import java.util.List;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-    // 🌟 Must match exactly the secret key phrase used in your user-service TokenRefresher
-    private final String secretPhrase = "myUltraSecretKeyForJwtTokenGeneration2026!!!";
-
+	@Value("${JWT_SECRET}")
+    private String secretPhrase;
+    
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretPhrase.getBytes(StandardCharsets.UTF_8));
     }
