@@ -50,13 +50,20 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerDTO updateCustomerByEmail(String email, CustomerDTO dto) {
+     
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         
+      
+        Customer customer = customerRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("No customer profile linked to this user account ID"));
         
-        Customer updated = mapFromDto(user.getId(), dto);
+    
+        Customer updated = mapFromDto(customer.getId(), dto);
+        
         return mapToDto(updated, user.getEmail());
     }
+
     
     private Customer mapFromDto(UUID id, CustomerDTO dto) {
         Customer customer = customerRepository.findById(id)
