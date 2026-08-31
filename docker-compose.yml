@@ -8,6 +8,7 @@ services:
       - "8094:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=local
+      - JWT_SECRET=myUltraSecretKeyForJwtTokenGeneration2026!!!
       - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/user_service_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=rootroot

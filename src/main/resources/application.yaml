@@ -1,12 +1,92 @@
+# ==========================================
+# GLOBAL & DEFAULT CONFIGURATION (PRODUCTION)
+# ==========================================
 server:
   port: ${PORT:8084}
   address: 0.0.0.0
-  error:
-    include-message: always
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:myUltraSecretKeyForJwtTokenGeneration2026!!!}
+
 
 spring:
-  application:
-    name: customer-service
+  profiles:
+    active: local
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:-jdbc:mysql://localhost:3306/user_service_db}
+    username: ${SPRING_DATASOURCE_USERNAME:-root}
+    password: ${SPRING_DATASOURCE_PASSWORD:-rootroot}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  rabbitmq:
+    addresses: ${SPRING_RABBITMQ_ADDRESSES:-}
+    template:
+      retry:
+        enabled: true
+        initial-interval: 3000ms
+        max-attempts: 3
+    listener:
+      simple:
+        initialize-consumers: true
+---
+# ==========================================
+# OVERRIDES FOR LOCAL DEVELOPMENT ENVIRONMENT
+# ==========================================
+spring:
+  profiles:
+    active:
+      on-profile: local
+      
+  datasource:
+    url: jdbc:mysql://localhost:3306/user_service_db?useSSL=false&serverTimezone=UTC
+    username: root
+    password: rootroot
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+
+  rabbitmq:
+    addresses: null
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    
+  logging:
+    level:
+    org.hibernate.orm.queries: trace
+
+---
+# ==========================================
+# OVERRIDES FOR RENDER PRODUCTION ENVIRONMENT
+# ==========================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+      # TO execute if not running in docker
+      #    docker run -d --name local-rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+  rabbitmq:
+    addresses: null
+    host: ://cloudamqp.com
+    port: 5671
+    username: saqjmled
+    password: T-J08aIkR7HBnuC1pgO7Q1KVHr66FZwf
+    virtual-host: saqjmled
+    ssl:
+      enabled: true
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:-jdbc:mysql://mysql.railway.internal:3306/railway?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&generateSimpleParameterMetadata=true}
     username: ${SPRING_DATASOURCE_USERNAME:-root}
